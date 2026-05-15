@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+@theme {
+  --color-garet-black: #1A1A1A;
+  --color-garet-cream: #F5F2ED;
+  --color-garet-wood: #3D2B1F;
+  --color-garet-gold: #C5A059;
+  --color-garet-white: #ffffff;
+  --color-garet-border: #E5E2DD;
+  
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+  --font-poppins: "Poppins", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-garet-cream text-garet-black;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-garet-wood;
+  }
+}
