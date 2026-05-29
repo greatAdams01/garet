@@ -1,11 +1,15 @@
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Droplet, LayoutDashboard, Truck, Armchair, Hammer, Paintbrush, Home as HomeIcon } from 'lucide-react';
 import clsx from 'clsx';
+import { db } from '../lib/firebase';
+import { collection, getDocs, getDoc, doc } from 'firebase/firestore';
 
 // Example image placeholders (Source: Unsplash API)
-const heroImage = "https://images.unsplash.com/photo-1618220179428-22790b46a0eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80";
+const defaultHeroImage = "https://images.unsplash.com/photo-1618220179428-22790b46a0eb?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80";
 const aboutImage = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
+const categoryPlaceholderImg = "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80";
 
 const services = [
   { icon: <Hammer />, title: "Custom Furniture Design & Manufacturing", desc: "Bespoke pieces crafted to fit your exact vision and space." },
@@ -17,24 +21,49 @@ const services = [
   { icon: <Armchair />, title: "Bespoke Upholstery", desc: "Expert upholstery with a curated selection of premium fabrics." }
 ];
 
-const featuredCategories = [
-  { name: "Living Room Furniture", img: "https://images.unsplash.com/photo-1567016432779-094069958ea5?auto=format&fit=crop&w=800&q=80" },
-  { name: "Bedroom Furniture", img: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80" },
-  { name: "Dining Sets", img: "https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=800&q=80" },
-  { name: "Office Furniture", img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80" },
-];
-
 const whyUs = [
   "Premium Craftsmanship", "Affordable Luxury", "Custom Designs", "Fast Delivery", "Professional Interior Solutions", "Trusted Customer Experience"
 ];
 
-const testimonials = [
-  { text: "Garet completely transformed my living room beautifully and professionally.", author: "Sarah C." },
-  { text: "Excellent craftsmanship and attention to detail. Will definitely recommend them.", author: "Michael B." },
-  { text: "Their furniture quality exceeded my expectations. So elegant and affordable.", author: "Grace E." }
-];
-
 export default function Home() {
+  const [siteSettings, setSiteSettings] = useState({ 
+    heroTitle: 'Elegant Furniture & Interior Solutions', 
+    heroSubtitle: 'Transforming homes and offices with stylish, functional, and affordable designs.', 
+    heroImage: defaultHeroImage 
+  });
+  const [categories, setCategories] = useState<{id: string, name: string}[]>([]);
+  const [gallery, setGallery] = useState<{id: string, image: string, title: string}[]>([]);
+  const [testimonials, setTestimonials] = useState<{id: string, text: string, author: string}[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [cSnap, gSnap, tSnap, sSnap] = await Promise.all([
+          getDocs(collection(db, "categories")),
+          getDocs(collection(db, "gallery")),
+          getDocs(collection(db, "testimonials")),
+          getDoc(doc(db, "settings", "global"))
+        ]);
+
+        if (sSnap.exists()) {
+          const sData = sSnap.data();
+          setSiteSettings({
+            heroTitle: sData.heroTitle || 'Elegant Furniture & Interior Solutions',
+            heroSubtitle: sData.heroSubtitle || 'Transforming homes and offices with stylish, functional, and affordable designs.',
+            heroImage: sData.heroImage || defaultHeroImage
+          });
+        }
+
+        setCategories(cSnap.docs.map(d => ({ id: d.id, name: d.data().name })));
+        setGallery(gSnap.docs.map(d => ({ id: d.id, image: d.data().image, title: d.data().title })));
+        setTestimonials(tSnap.docs.map(d => ({ id: d.id, text: d.data().text, author: d.data().author })));
+      } catch (error) {
+        console.error("Error fetching homepage data", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
@@ -59,16 +88,15 @@ export default function Home() {
             <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-garet-gold via-garet-wood to-garet-black"></div>
             <div className="absolute inset-0 z-0">
               <div className="absolute inset-0 bg-garet-wood/60 z-10 transition-opacity duration-700 group-hover:opacity-80"></div>
-              <img src={heroImage} alt="Luxury Interior" className="w-full h-full object-cover scale-105 transform group-hover:scale-110 transition-transform duration-1000" />
+              <img src={siteSettings.heroImage} alt="Luxury Interior" className="w-full h-full object-cover scale-105 transform group-hover:scale-110 transition-transform duration-1000" />
             </div>
             <div className="relative z-20">
               <motion.div initial="hidden" animate="visible" variants={containerVariants}>
-                <motion.h1 variants={itemVariants} className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-4 leading-tight">
-                  Elegant Furniture & Interior Solutions <br className="hidden md:block"/>
-                  <span className="italic text-garet-gold">Designed For Your Space.</span>
+                <motion.h1 variants={itemVariants} className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-4 leading-tight whitespace-pre-line">
+                  {siteSettings.heroTitle}
                 </motion.h1>
                 <motion.p variants={itemVariants} className="font-poppins text-sm md:text-base font-light opacity-90 mb-8 max-w-md leading-relaxed">
-                  Transforming homes and offices with stylish, functional, and affordable designs.
+                  {siteSettings.heroSubtitle}
                 </motion.p>
                 <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3">
                   <Link to="/shop" className="px-6 py-3 bg-garet-gold text-white rounded-full font-medium text-xs md:text-sm hover:scale-105 transition-transform shadow-lg shadow-garet-gold/20">
@@ -89,18 +117,19 @@ export default function Home() {
           <div className="lg:col-span-4 lg:row-span-3 bg-white rounded-[2rem] p-6 lg:p-8 shadow-sm border border-garet-border flex flex-col justify-between hover:border-garet-gold transition-colors">
             <h3 className="text-xs uppercase tracking-widest font-bold mb-6 flex justify-between text-garet-black">
               Collections
-              <span className="text-garet-gold">01/08</span>
+              <span className="text-garet-gold">{categories.length > 0 ? `01/0${categories.length}` : '00/00'}</span>
             </h3>
             <div className="grid grid-cols-2 gap-3 flex-1">
-              {featuredCategories.slice(0, 4).map((cat, i) => (
+              {categories.slice(0, 4).map((cat, i) => (
                 <Link key={i} to={`/shop?category=${encodeURIComponent(cat.name)}`} className="bg-garet-cream rounded-2xl p-4 flex flex-col justify-between border border-transparent hover:border-garet-gold hover:shadow-sm transition-all group overflow-hidden relative">
                   <div className="absolute inset-0 opacity-10 group-hover:opacity-30 transition-opacity">
-                    <img src={cat.img} alt={cat.name} className="w-full h-full object-cover grayscale" />
+                    <img src={categoryPlaceholderImg} alt={cat.name} className="w-full h-full object-cover grayscale" />
                   </div>
                   <span className="text-[10px] uppercase font-bold opacity-40 relative z-10 text-garet-black">0{i + 1}</span>
                   <span className="text-xs font-semibold relative z-10 group-hover:text-garet-gold text-garet-black transition-colors">{cat.name}</span>
                 </Link>
               ))}
+              {categories.length === 0 && <div className="col-span-2 text-xs opacity-50 font-poppins text-center py-8">No collections available yet.</div>}
             </div>
           </div>
 
@@ -221,15 +250,16 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredCategories.map((cat, i) => (
+            {categories.slice(0, 4).map((cat, i) => (
               <Link key={i} to={`/shop?category=${encodeURIComponent(cat.name)}`} className="group block relative h-96 overflow-hidden rounded-[1.5rem]">
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors z-10"></div>
-                <img src={cat.img} alt={cat.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                <img src={categoryPlaceholderImg} alt={cat.name} className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700" />
                 <div className="absolute bottom-6 left-6 z-20">
                   <h3 className="text-white font-serif text-2xl drop-shadow-md font-bold">{cat.name}</h3>
                 </div>
               </Link>
             ))}
+            {categories.length === 0 && <p className="text-gray-400 font-poppins text-center col-span-4 py-12">No collections available yet.</p>}
           </div>
           <div className="mt-8 sm:hidden text-center">
               <Link to="/shop" className="inline-flex items-center justify-center w-full px-6 py-4 border border-garet-wood text-sm uppercase tracking-widest font-bold text-garet-wood hover:bg-garet-gold hover:text-white hover:border-garet-gold transition-colors rounded-full">
@@ -271,23 +301,23 @@ export default function Home() {
             <h2 className="font-serif text-4xl text-garet-wood font-bold mb-4">Our Portfolio</h2>
             <div className="w-24 h-1 bg-garet-gold mx-auto rounded-full"></div>
           </div>
-          {/* Simple masonry simulation using flex/grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
-            <div className="md:col-span-2 md:row-span-2 bg-gray-200 group overflow-hidden relative rounded-[1.5rem]">
-              <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80" alt="Interior" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                 <span className="text-white font-serif text-xl border border-white px-6 py-2 rounded-full backdrop-blur-sm bg-black/20">Luxury Lounge</span>
+            {gallery.length > 0 ? gallery.map((g, i) => (
+              <div key={g.id} className={clsx(
+                "bg-gray-200 group overflow-hidden relative rounded-[1.5rem]",
+                // Make the first image span 2x2, the last image span full width (just to mimic the old masonry effect)
+                i === 0 ? "md:col-span-2 md:row-span-2" : i === 3 ? "md:col-span-3" : ""
+              )}>
+                <img src={g.image} alt={g.title || 'Gallery'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                {g.title && (
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                     <span className="text-white font-serif text-xl border border-white px-6 py-2 rounded-full backdrop-blur-sm bg-black/20">{g.title}</span>
+                  </div>
+                )}
               </div>
-            </div>
-            <div className="bg-gray-200 group overflow-hidden relative rounded-[1.5rem]">
-               <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=600&q=80" alt="Interior" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </div>
-            <div className="bg-gray-200 group overflow-hidden relative rounded-[1.5rem]">
-               <img src="https://images.unsplash.com/photo-1594042861271-bf32c02931a7?auto=format&fit=crop&w=600&q=80" alt="Interior" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </div>
-            <div className="md:col-span-3 bg-gray-200 group overflow-hidden relative rounded-[1.5rem]">
-               <img src="https://images.unsplash.com/photo-1600607687920-4e2a09c254ea?auto=format&fit=crop&w=1200&q=80" alt="Interior" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-            </div>
+            )) : (
+              <div className="col-span-3 text-center py-12 text-gray-400 font-poppins">No gallery images added yet. Add some in the Admin Dashboard!</div>
+            )}
           </div>
         </div>
       </section>
@@ -298,15 +328,17 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="font-serif text-4xl text-garet-wood font-bold mb-12">What Our Clients Say</h2>
             <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((t, i) => (
-                <div key={i} className="bg-white rounded-[1.5rem] p-8 shadow-sm flex flex-col justify-between border border-garet-border/50">
+              {testimonials.length > 0 ? testimonials.map((t) => (
+                <div key={t.id} className="bg-white rounded-[1.5rem] p-8 shadow-sm flex flex-col justify-between border border-garet-border/50">
                   <div className="text-garet-gold mb-4 text-4xl font-serif">"</div>
                   <p className="font-poppins text-sm opacity-80 italic mb-6 leading-relaxed flex-1">
                     {t.text}
                   </p>
                   <div className="font-sans font-bold tracking-widest text-[10px] uppercase text-garet-wood">{t.author}</div>
                 </div>
-              ))}
+              )) : (
+                <div className="col-span-3 text-center text-gray-500 font-poppins">No testimonials available yet.</div>
+              )}
             </div>
           </div>
         </div>

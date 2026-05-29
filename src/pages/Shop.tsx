@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, MessageCircle } from 'lucide-react';
-import { products as staticProducts, categories, Product } from '../data/products';
+import { Product } from '../data/products';
 import { db } from '../lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import clsx from 'clsx';
@@ -15,21 +15,31 @@ export default function Shop() {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [products, setProducts] = useState<Product[]>(staticProducts); // Fallback to static initially
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>(['All']);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "products"));
-        const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
-        if (productsData.length > 0) {
-          setProducts(productsData);
-        }
+        setIsLoading(true);
+        const [pSnap, cSnap] = await Promise.all([
+          getDocs(collection(db, "products")),
+          getDocs(collection(db, "categories"))
+        ]);
+        setProducts(pSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product)));
+        
+        // Populate categories, always keeping "All" at the start
+        const fetchedCategories = cSnap.docs.map(doc => doc.data().name);
+        setCategories(['All', ...fetchedCategories]);
+        
       } catch (error) {
-        console.error("Error fetching products: ", error);
+        console.error("Error fetching data: ", error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    fetchProducts();
+    fetchData();
   }, []);
 
   // Scroll to top when modal opens
@@ -48,7 +58,7 @@ export default function Shop() {
                           product.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchCategory && matchSearch;
     });
-  }, [activeCategory, searchQuery]);
+  }, [activeCategory, searchQuery, products]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(price);
@@ -103,7 +113,11 @@ export default function Shop() {
         </div>
 
         {/* Product Grid */}
-        {filteredProducts.length > 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center items-center py-32">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-garet-gold"></div>
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <motion.div 
             layout
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12"
