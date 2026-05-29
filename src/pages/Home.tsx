@@ -8,19 +8,20 @@ const heroImage = "https://images.unsplash.com/photo-1618220179428-22790b46a0eb?
 const aboutImage = "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80";
 
 const services = [
-  { icon: <Hammer />, title: "Custom Furniture Design", desc: "Bespoke pieces crafted to fit your exact vision and space." },
-  { icon: <LayoutDashboard />, title: "Interior Space Planning", desc: "Optimizing layouts for functionality, flow, and aesthetics." },
-  { icon: <HomeIcon />, title: "Residential & Commercial", desc: "Supplying premium furniture for homes and office spaces." },
-  { icon: <Paintbrush />, title: "Repair & Restoration", desc: "Breathing new life into your cherished furniture pieces." },
-  { icon: <Armchair />, title: "Bespoke Upholstery", desc: "Expert upholstery with a curated selection of premium fabrics." },
-  { icon: <Droplet />, title: "Project Management", desc: "Seamless end-to-end management for fit-outs and renovations." },
+  { icon: <Hammer />, title: "Custom Furniture Design & Manufacturing", desc: "Bespoke pieces crafted to fit your exact vision and space." },
+  { icon: <LayoutDashboard />, title: "Interior Space Planning & Design Consultation", desc: "Optimizing layouts for functionality, flow, and aesthetics." },
+  { icon: <HomeIcon />, title: "Residential & Commercial Furniture Supply", desc: "Supplying premium furniture for homes and office spaces." },
+  { icon: <Armchair />, title: "Office Interior Design & Furnishing Solutions", desc: "Professional environments designed for productivity and style." },
+  { icon: <Paintbrush />, title: "Furniture Repair, Refurbishment & Restoration", desc: "Breathing new life into your cherished furniture pieces." },
+  { icon: <Droplet />, title: "Project Management for Interior Fit-outs & Renovations", desc: "Seamless end-to-end management for fit-outs and renovations." },
+  { icon: <Armchair />, title: "Bespoke Upholstery", desc: "Expert upholstery with a curated selection of premium fabrics." }
 ];
 
 const featuredCategories = [
-  { name: "Living Room", img: "https://images.unsplash.com/photo-1567016432779-094069958ea5?auto=format&fit=crop&w=800&q=80" },
-  { name: "Bedroom", img: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80" },
+  { name: "Living Room Furniture", img: "https://images.unsplash.com/photo-1567016432779-094069958ea5?auto=format&fit=crop&w=800&q=80" },
+  { name: "Bedroom Furniture", img: "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=800&q=80" },
   { name: "Dining Sets", img: "https://images.unsplash.com/photo-1604578762246-41134e37f9cc?auto=format&fit=crop&w=800&q=80" },
-  { name: "Office", img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80" },
+  { name: "Office Furniture", img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=800&q=80" },
 ];
 
 const whyUs = [
@@ -62,18 +63,21 @@ export default function Home() {
             </div>
             <div className="relative z-20">
               <motion.div initial="hidden" animate="visible" variants={containerVariants}>
-                <motion.h1 variants={itemVariants} className="font-serif text-4xl md:text-6xl font-medium tracking-tight mb-4 leading-tight">
-                  Where Luxury Meets <br/>
-                  <span className="italic text-garet-gold">Affordability.</span>
+                <motion.h1 variants={itemVariants} className="font-serif text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-4 leading-tight">
+                  Elegant Furniture & Interior Solutions <br className="hidden md:block"/>
+                  <span className="italic text-garet-gold">Designed For Your Space.</span>
                 </motion.h1>
                 <motion.p variants={itemVariants} className="font-poppins text-sm md:text-base font-light opacity-90 mb-8 max-w-md leading-relaxed">
-                  Transforming homes and offices with stylish, functional, and bespoke interior solutions designed for your space.
+                  Transforming homes and offices with stylish, functional, and affordable designs.
                 </motion.p>
-                <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4">
-                  <Link to="/shop" className="px-8 py-3 bg-garet-gold text-white rounded-full font-medium text-sm hover:scale-105 transition-transform shadow-lg shadow-garet-gold/20">
+                <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-3">
+                  <Link to="/shop" className="px-6 py-3 bg-garet-gold text-white rounded-full font-medium text-xs md:text-sm hover:scale-105 transition-transform shadow-lg shadow-garet-gold/20">
                     Shop Furniture
                   </Link>
-                  <a href="https://wa.me/2349069779077?text=I%20want%20to%20book%20a%20consultation" target="_blank" rel="noopener noreferrer" className="px-8 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-medium text-sm hover:bg-white/20 transition-colors">
+                  <a href="https://wa.me/2349069779077?text=Hello%20Garet%20Furniture,%20I%E2%80%99m%20interested%20in%20your%20furniture%20and%20interior%20services." target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-[#25D366] text-white rounded-full font-medium text-xs md:text-sm hover:scale-105 transition-transform shadow-lg shadow-[#25D366]/20">
+                    Chat on WhatsApp
+                  </a>
+                  <a href="https://wa.me/2349069779077?text=I%20want%20to%20book%20a%20consultation" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-medium text-xs md:text-sm hover:bg-white/20 transition-colors">
                     Book Consultation
                   </a>
                 </motion.div>
@@ -195,8 +199,8 @@ export default function Home() {
                 <div className="text-garet-gold mb-6 shrink-0 transform group-hover:scale-110 transition-transform">{s.icon}</div>
                 <h3 className="font-serif text-2xl mb-3 text-white">{s.title}</h3>
                 <p className="font-poppins text-sm opacity-70 mb-6 leading-relaxed text-garet-cream">{s.desc}</p>
-                <a href="https://wa.me/2349069779077" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-xs uppercase tracking-widest font-bold text-garet-gold hover:text-white transition-colors">
-                  Learn More <ChevronRight size={14} className="ml-1" />
+                <a href="https://wa.me/2349069779077?text=Hello%20Garet%20Furniture,%20I'd%20like%20to%20learn%20more%20about%20your%20services" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-xs uppercase tracking-widest font-bold text-garet-gold hover:text-white transition-colors">
+                  WhatsApp CTA <ChevronRight size={14} className="ml-1" />
                 </a>
               </motion.div>
             ))}
@@ -304,6 +308,53 @@ export default function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Social Feed */}
+      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <div className="bg-white rounded-[2rem] p-10 lg:p-16 border border-garet-border shadow-sm">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+            <div>
+              <h2 className="font-serif text-4xl text-garet-wood font-bold mb-4 text-center md:text-left">Join Our Community</h2>
+              <p className="font-poppins opacity-70">Follow us on Instagram & TikTok for daily inspiration</p>
+            </div>
+            <div className="flex gap-4">
+              <a href="https://instagram.com/garetfurnitures" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-gradient-to-r from-[#833ab4] via-[#fd1d1d] to-[#fcb045] text-white rounded-full font-bold text-sm tracking-widest uppercase hover:scale-105 transition-transform shadow-lg">
+                Instagram
+              </a>
+              <a href="https://tiktok.com/@garetfurnitures" target="_blank" rel="noopener noreferrer" className="px-6 py-3 bg-black text-white rounded-full font-bold text-sm tracking-widest uppercase hover:scale-105 transition-transform shadow-lg">
+                TikTok
+              </a>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="https://instagram.com/garetfurnitures" target="_blank" rel="noopener noreferrer" className="group block aspect-square bg-gray-200 relative overflow-hidden rounded-[1.5rem]">
+              <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=600&q=80" alt="Instagram post" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span className="text-white font-poppins font-bold text-sm">@garetfurnitures</span>
+              </div>
+            </a>
+            <a href="https://tiktok.com/@garetfurnitures" target="_blank" rel="noopener noreferrer" className="group block aspect-square bg-gray-200 relative overflow-hidden rounded-[1.5rem]">
+              <img src="https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=600&q=80" alt="TikTok post" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span className="text-white font-poppins font-bold text-sm">@garetfurnitures</span>
+              </div>
+            </a>
+            <a href="https://instagram.com/garetfurnitures" target="_blank" rel="noopener noreferrer" className="group block aspect-square bg-gray-200 relative overflow-hidden rounded-[1.5rem]">
+              <img src="https://images.unsplash.com/photo-1593696140826-c58b021acf8b?auto=format&fit=crop&w=600&q=80" alt="Instagram post" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span className="text-white font-poppins font-bold text-sm">@garetfurnitures</span>
+              </div>
+            </a>
+            <a href="https://tiktok.com/@garetfurnitures" target="_blank" rel="noopener noreferrer" className="group block aspect-square bg-gray-200 relative overflow-hidden rounded-[1.5rem]">
+              <img src="https://images.unsplash.com/photo-1616137466211-f939a420be84?auto=format&fit=crop&w=600&q=80" alt="TikTok post" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <span className="text-white font-poppins font-bold text-sm">@garetfurnitures</span>
+              </div>
+            </a>
           </div>
         </div>
       </section>

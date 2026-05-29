@@ -2,7 +2,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, MessageCircle } from 'lucide-react';
-import { products, categories, Product } from '../data/products';
+import { products as staticProducts, categories, Product } from '../data/products';
+import { db } from '../lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import clsx from 'clsx';
 
 export default function Shop() {
@@ -13,6 +15,22 @@ export default function Shop() {
   const [activeCategory, setActiveCategory] = useState(initialCategory);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [products, setProducts] = useState<Product[]>(staticProducts); // Fallback to static initially
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        const productsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+        if (productsData.length > 0) {
+          setProducts(productsData);
+        }
+      } catch (error) {
+        console.error("Error fetching products: ", error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   // Scroll to top when modal opens
   useEffect(() => {
